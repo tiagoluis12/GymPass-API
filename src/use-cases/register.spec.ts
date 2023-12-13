@@ -2,7 +2,7 @@ import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-user
 import { expect, describe, it } from 'vitest'
 import { RegisterUseCase } from './register'
 import { compare } from 'bcryptjs'
-import { UserAlreadyExistsError } from './erros/user-already-exists-error'
+import { UserAlreadyExistsError } from '../use-cases/erros/user-already-exists.error'
 
 describe('Register Use Case', () => {
   it('Should be able to register', async () => {
