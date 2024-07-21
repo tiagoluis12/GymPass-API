@@ -1,15 +1,19 @@
 import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
-import { expect, describe, it } from 'vitest'
+import { expect, describe, it, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register'
 import { compare } from 'bcryptjs'
 import { UserAlreadyExistsError } from '../use-cases/erros/user-already-exists.error'
 
-describe('Register Use Case', () => {
-  it('Should be able to register', async () => {
-    const usersRepository = new InMemoryUsersRepository()
-    const registerUseCase = new RegisterUseCase(usersRepository)
+let usersRepository: InMemoryUsersRepository
+let sut: RegisterUseCase
 
-    const { user } = await registerUseCase.execute({
+describe('Register Use Case', () => {
+  beforeEach(() => {
+    usersRepository = new InMemoryUsersRepository()
+    sut = new RegisterUseCase(usersRepository)
+  })
+  it('Should be able to register', async () => {
+    const { user } = await sut.execute({
       name: 'Tiago Luis',
       email: 'tiago@hotmail.com',
       password: '123456',
@@ -19,10 +23,7 @@ describe('Register Use Case', () => {
   })
 
   it('Should hash the user password upon registration', async () => {
-    const usersRepository = new InMemoryUsersRepository()
-    const registerUseCase = new RegisterUseCase(usersRepository)
-
-    const { user } = await registerUseCase.execute({
+    const { user } = await sut.execute({
       name: 'Tiago Luis',
       email: 'tiago@hotmail.com',
       password: '123456',
@@ -34,19 +35,16 @@ describe('Register Use Case', () => {
   })
 
   it('Should not be able to register with the same email twice', async () => {
-    const usersRepository = new InMemoryUsersRepository()
-    const registerUseCase = new RegisterUseCase(usersRepository)
-
     const email = 'tiago@hotmail.com'
 
-    await registerUseCase.execute({
+    await sut.execute({
       name: 'Tiago Luis',
       email,
       password: '123456',
     })
 
     await expect(() =>
-      registerUseCase.execute({
+      sut.execute({
         name: 'Tiago Luis',
         email,
         password: '123456',
